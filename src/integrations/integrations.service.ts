@@ -1,33 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { BrevoService } from './brevo/brevo.service.js';
 
 @Injectable()
 export class IntegrationsService {
 
-  async handleNewContact(contact: any) {
-
-    console.log('Lead listo para integraciones:', contact.id);
-
-    // FUTURO:
-    // await this.sendToGoogle(contact);
-    // await this.sendToMeta(contact);
-  }
+  constructor(
+    private readonly brevoService: BrevoService,
+  ) {}
 
   async dispatch(payload: {
-  lead: any;
-  event: string;
-}) {
-  // Aquí luego irá Meta, Google, Webhooks, etc.
-  console.log('Dispatching integration:', payload);
+    lead: any;
+    event: string;
+  }) {
+    if (payload.event === 'contact_submit') {
+      await this.brevoService.sendLeadEmail(payload);
+    }
 
-  return true;
-}
-
-
-  async sendToGoogle(contact: any) {
-    // Aquí irá la lógica futura
-  }
-
-  async sendToMeta(contact: any) {
-    // Aquí irá la lógica futura
+    return true;
   }
 }
